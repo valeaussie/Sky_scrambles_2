@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --job-name=DR3_PPTA_makeskyscrambles
+#SBATCH --output=/fred/oz002/vdimarco/sky_scrambles/skies/DR3_PPTA_makeskyscrambles.out
+#SBATCH --ntasks=1
+#SBATCH --time=24:00:00
+#SBATCH --tmp=8g
+#SBATCH --mem-per-cpu=8g
+
+unset PYTHONPATH
+ml conda
+conda activate ent15y             
+
+
+python /fred/oz002/vdimarco/sky_scrambles/skies/DR3_PPTA_makeskyscrambles_val.py

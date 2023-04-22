@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --job-name=NG_scrambles_resume_mod.py
+#SBATCH --output=/fred/oz002/vdimarco/sky_scrambles/skies/NANOGrav_makeskyscrambles_val_resume_mod.out
+#SBATCH --ntasks=1
+#SBATCH --time=48:00:00
+#SBATCH --tmp=8g
+#SBATCH --mem-per-cpu=8g
+
+unset PYTHONPATH
+ml conda
+conda activate ent15y             
+
+
+python /fred/oz002/vdimarco/sky_scrambles/skies/NANOGrav_makeskyscrambles_val_mod_resume.py
