@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=PPTA_modif_final
-#SBATCH --output=/fred/oz002/vdimarco/sky_scrambles/skies/PPTA_mod_final.out
+#SBATCH --output=/fred/oz002/vdimarco/sky_scrambles/skies/outputs/PPTA_mod_final.out
 #SBATCH --ntasks=1
 #SBATCH --time=48:00:00
 #SBATCH --tmp=8g

@@ -25,7 +25,7 @@ def SciNotation(num,sig):
     else:
         return r"${}\times 10^{{{}}}$".format(x[0],x[1][1:].lstrip('0'))
 
-with open('/fred/oz002/vdimarco/sky_scrambles/skies/results/2_final_PPTA_n_tries_many.csv', 'r') as file:
+with open('/fred/oz002/vdimarco/sky_scrambles/skies/results/final_PPTA_n_tries_many_mod_2h.csv', 'r') as file:
     csvreader = csv.reader(file)
     n_t = []    
     for row in csvreader:
@@ -33,13 +33,21 @@ with open('/fred/oz002/vdimarco/sky_scrambles/skies/results/2_final_PPTA_n_tries
 
 n_tries_PPTA = [int(item[0]) for item in n_t]
 
-with open('/fred/oz002/vdimarco/sky_scrambles/skies/results/2_final_NANOGrav_n_tries_many.csv', 'r') as file:
+with open('/fred/oz002/vdimarco/sky_scrambles/skies/results/2_final_NANOGrav_n_tries_many_mod.csv', 'r') as file:
     csvreader = csv.reader(file)
     n_t = []
     for row in csvreader:
         n_t.append(row)
         
 n_tries_NANOGrav = [int(item[0]) for item in n_t]
+
+with open('/fred/oz002/vdimarco/IPTA_scrambles/results/IPTA_n_tries_many_mod.csv', 'r') as file:
+    csvreader = csv.reader(file)
+    n_t = []
+    for row in csvreader:
+        n_t.append(row)
+
+n_tries_IPTA = [int(item[0]) for item in n_t] 
 
 def count_zeros(arr):
     result = []
@@ -60,13 +68,21 @@ def cumulative(lists):
 
 cum_accepted_PPTA = np.cumsum(n_tries_PPTA)
 cum_accepted_NANOGrav = np.cumsum(n_tries_NANOGrav)
+cum_accepted_IPTA = np.cumsum(n_tries_IPTA)
 cum_num_of_tries_PPTA = np.arange(0, len(n_tries_PPTA))
 cum_num_of_tries_NANOGrav = np.arange(0, len(n_tries_NANOGrav))
+cum_num_of_tries_IPTA = np.arange(0, len(n_tries_IPTA))
 
+
+print('PPTA')
 print(len(cum_num_of_tries_PPTA))
 print(cum_accepted_PPTA)
+print('NG')
 print(len(cum_num_of_tries_NANOGrav))
 print(cum_accepted_NANOGrav)
+print('IPTA')
+print(len(cum_num_of_tries_IPTA))
+print(cum_accepted_IPTA)
 
 #-- old code
 #num_of_tries = count_zeros(n_tries)
@@ -93,36 +109,30 @@ print(cum_accepted_NANOGrav)
 
 #-- new code
 fig, ax = plt.subplots()
-
-prop_cycle = plt.rcParams['axes.prop_cycle']
-colors = prop_cycle.by_key()['color']
-
-#plt.step(cum_num_of_tries_PPTA, cum_accepted_PPTA, label='PPTA')
-plt.step(cum_num_of_tries_NANOGrav, cum_accepted_NANOGrav, linestyle='--' , color = '#fb8072',label='NANOGrav')
-#plt.step(cum_num_of_tries_NANOGrav, cum_accepted_NANOGrav,label='NANOGrav')
-xticks = np.linspace(0, 67000, 9)
+plt.step(cum_num_of_tries_PPTA, cum_accepted_PPTA, label='PPTA')
+plt.step(cum_num_of_tries_NANOGrav, cum_accepted_NANOGrav, linestyle='--' ,label='NANOGrav')
+plt.step(cum_num_of_tries_IPTA, cum_accepted_IPTA, linestyle='dotted', color = 'forestgreen', label='IPTA') 
+xticks = np.linspace(0, 40000, 9)
 xticklabels = ['{:.1f}'.format(i/10000) for i in xticks]
 ax.set_xticks(xticks)
 ax.set_xticklabels(xticklabels) 
 
-print(colors)
 
 #locs, labs = plt.xticks()
 #plt.xticks(locs, [SciNotation(l, 2) for l in locs]) 
 
 
-
 plt.minorticks_on()
 plt.xlabel('$N_{{\mathrm{{proposed}}}}$', fontsize=18)
 plt.ylabel('$N_{{\mathrm{{accepted}}}}$', fontsize=18)
-#plt.legend(loc='upper right')
-plt.xlim(-100, None)
-plt.ylim(0, None)
+plt.legend(loc='upper left')
+plt.xlim(-100, 40000)
+plt.ylim(0, 35)
 
 xlim = ax.get_xlim() 
 ax.annotate('x10$^4$', xy=(xlim[1], 0), xytext=(5, -20), textcoords='offset points', ha='right', va='top', fontsize=12)
 
-plt.savefig('2_final_NG_scrambles_red.pdf', bbox_inches='tight' )
+plt.savefig('/fred/oz002/vdimarco/IPTA_scrambles/plots/IPTA_PPTA_NG_scrambles_mod.pdf', bbox_inches='tight' )
 
 
 plt.show()

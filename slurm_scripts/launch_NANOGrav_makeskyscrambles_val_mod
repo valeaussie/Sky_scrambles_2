@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=NANOGrav_modif_final
-#SBATCH --output=/fred/oz002/vdimarco/sky_scrambles/skies/NANOGrav_modif_final.out
+#SBATCH --output=/fred/oz002/vdimarco/sky_scrambles/skies/outputs/NANOGrav_modif_final.out
 #SBATCH --ntasks=1
 #SBATCH --time=24:00:00
 #SBATCH --tmp=8g

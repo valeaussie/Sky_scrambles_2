@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=NG_scrambles_resume.py
-#SBATCH --output=/fred/oz002/vdimarco/sky_scrambles/skies/NANOGrav_makeskyscrambles_val_resume.out
+#SBATCH --output=/fred/oz002/vdimarco/sky_scrambles/skies/outputs/NANOGrav_makeskyscrambles_val_resume.out
 #SBATCH --ntasks=1
 #SBATCH --time=48:00:00
 #SBATCH --tmp=8g

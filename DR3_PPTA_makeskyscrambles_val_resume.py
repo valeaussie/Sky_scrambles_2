@@ -103,7 +103,8 @@ def compute_npsrs(npairs):
 
 def get_scrambles(orf_true, Omega, f, Pij,  N=10, thresh=0.1, resume=False):
     npsr = compute_npsrs(len(orf_true))
-
+    thetas = []
+    phis = []
     if resume == False:
         print("not resume")
     
@@ -116,7 +117,7 @@ def get_scrambles(orf_true, Omega, f, Pij,  N=10, thresh=0.1, resume=False):
     elif resume == True:
         print("resume")
         orfs = list(np.load("/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_PPTA_makeskyscrambles_val_orfs.npy"))
-        rejections = list(pd.read_csv("/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_PPTA_n_tries_many_2h.csv", index_col=None).values.squeeze())
+        rejections = list(pd.read_csv("/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_PPTA_n_tries_many_2h_2.csv", index_col=None).values.squeeze())
         n_iter = len(rejections)
         n_accep = np.cumsum(rejections)[-1]
     start = time.time()
@@ -141,16 +142,18 @@ def get_scrambles(orf_true, Omega, f, Pij,  N=10, thresh=0.1, resume=False):
             end = time.time()
             #print("time {}".format((end-start)))
             if end - start > 7200:
-                return(n_accep, n_iter, rejections)
+                return(n_accep, n_iter, rejections, orfs, thetas, phis)
         rejections.append(ct_rej)
+        
         if reject == False:
             orfs.append(new_orf)
-
+            thetas.append(ptheta)
+            phis.append(pphi)
             np.save("/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_PPTA_makeskyscrambles_val_orfs", np.array(orfs))
             
             start = time.time()
 
-            pd.DataFrame(rejections).to_csv('/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_PPTA_n_tries_many_2h.csv', header=None, index=None)
+            pd.DataFrame(rejections).to_csv('/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_PPTA_n_tries_many_2h_2.csv', header=None, index=None)
             plt.plot(np.cumsum(np.array(rejections)))
             plt.title("DR3_PPTA_sky_scrambles; threshold: 0.1")
             plt.xlabel("Number of iterations")
@@ -162,11 +165,13 @@ def get_scrambles(orf_true, Omega, f, Pij,  N=10, thresh=0.1, resume=False):
             print("accepted")
         #else:
             #print("rejected")
-    return(n_accep, n_iter, rejections)
+    return(n_accep, n_iter, rejections, orfs, thetas, phis)
 
 
-n_a, n_i, c = get_scrambles(orf_true, Omega, f, Pij, 1000, 0.1, resume=True)
+n_a, n_i, c, orfs, thetas, phis = get_scrambles(orf_true, Omega, f, Pij, 10000, 0.1, resume=False)
 
-#print(c)
+pd.DataFrame(orfs).to_csv('/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_orfs.csv', header=None, index=None)
+pd.DataFrame(thetas).to_csv('/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_thetas.csv', header=None, index=None)
+pd.DataFrame(phis).to_csv('/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_phis.csv', header=None, index=None)
 
 #pd.DataFrame(c).to_csv('/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_PPTA_n_tries_many_2h.csv', header=None, index=None) 

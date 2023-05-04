@@ -20,7 +20,7 @@ def SciNotation(num,sig):
     else:
         return r"${}\times 10^{{{}}}$".format(x[0],x[1][1:].lstrip('0'))
 
-with open('/fred/oz002/vdimarco/sky_scrambles/skies/results/final_PPTA_n_tries_many_mod_2h.csv', 'r') as file:
+with open('/fred/oz002/vdimarco/sky_scrambles/skies/results/2_final_PPTA_n_tries_many_mod.csv', 'r') as file:
     csvreader = csv.reader(file)
     n_t = []    
     for row in csvreader:
@@ -69,6 +69,6 @@ plt.xticks(locs, [SciNotation(l, 2) for l in locs])
 plt.xlim(-100, None)
 plt.ylim(0,None)
 
-plt.savefig('final_PPTA_mod.pdf', bbox_inches='tight' )
+plt.savefig('2_final_PPTA_mod.pdf', bbox_inches='tight' )
 
 

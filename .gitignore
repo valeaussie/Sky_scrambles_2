@@ -2,6 +2,10 @@
 results/
 plots/
 outputs/
-sensitivity_curves/
 trash/
 SV_code/
+12p5yr_stochastic_analysis/
+ppta_dr3/
+ppta_dr2_noise_analysis/
+DR2/
+slurm_jobs/

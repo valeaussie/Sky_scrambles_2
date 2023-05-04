@@ -3,6 +3,8 @@ import csv
 import pandas as pd
 import time
 import pdb
+import time
+import matplotlib.pyplot as plt
 
 def compute_match(orf1, orf2, Omega, f, Pij):
     # hack
@@ -56,10 +58,11 @@ def compute_orf(ptheta, pphi):
                                                                                 
     return orf
 
-filename = '/fred/oz002/vdimarco/sky_scrambles/skies/sensitivity_curves/ppta_dr3/PPTA_ORF_true_DR3.csv'
-Omega_str = '/fred/oz002/vdimarco/sky_scrambles/skies/sensitivity_curves/results/PPTA_DR3_Omega_alltimes.csv' 
-f_str = '/fred/oz002/vdimarco/sky_scrambles/skies/sensitivity_curves/results/PPTA_DR3_frequencies_alltimes.csv'
-Pij_str = '/fred/oz002/vdimarco/sky_scrambles/skies/sensitivity_curves/results/PPTA_DR3_S_I_alltimes.csv'
+filename = '/fred/oz002/vdimarco/IPTA_scrambles/results/IPTA_ORF_true.csv'
+Omega_str = '/fred/oz002/vdimarco/IPTA_scrambles/results/IPTA_Omega.csv' 
+f_str = '/fred/oz002/vdimarco/IPTA_scrambles/results/IPTA_frequencies.csv'
+Pij_str = '/fred/oz002/vdimarco/IPTA_scrambles/results/IPTA_S_I.csv'
+
 
 Omega = []                                                                      
 with open(Omega_str, 'r') as csv_file:                                          
@@ -69,6 +72,7 @@ with open(Omega_str, 'r') as csv_file:
 Omega = np.array(Omega)                                                         
 Omega = Omega.astype(float)
 
+
 f = []                                                                          
 with open(f_str, 'r') as csv_file:                                              
     csv_reader = csv.reader(csv_file)                                           
@@ -77,6 +81,7 @@ with open(f_str, 'r') as csv_file:
 f = np.array(f)                                                                 
 f = f.astype(float)
 
+
 Pij = []                                                                        
 with open(Pij_str, 'r') as csv_file:                                            
     csv_reader = csv.reader(csv_file)                                           
@@ -84,7 +89,11 @@ with open(Pij_str, 'r') as csv_file:
         Pij.append(row)                                                         
                                                                                 
 Pij = np.array(Pij)                                                             
-Pij = Pij.astype(float)                                                         
+Pij = Pij.astype(float)
+print("the length of Pij")                                                         
+print(len(Pij))                                                                   
+#orf_true = np.loadtxt(filename, delimiter = ',') 
+
 
 orf_true= []
 with open(filename, 'r') as csv_file:
@@ -92,25 +101,36 @@ with open(filename, 'r') as csv_file:
     for row in csv_reader:
         orf_true.append(row)
 
-#orf_true = np.loadtxt(filename, delimiter = ',') 
-
 orf_true = np.array(orf_true)
 orf_true = orf_true.astype(float)
 orf_true = orf_true.squeeze()
+
+print(np.shape(Pij))
+print(np.shape(orf_true))
 
 def compute_npsrs(npairs):                                                      
     n = (1 + np.sqrt(1+8*npairs))/2                                             
     return int(n)
 
-def get_scrambles(orf_true, Omega, f, Pij,  N=10, thresh=0.1):
+def get_scrambles(orf_true, Omega, f, Pij, N=10, thresh=0.1, resume=False):
     npsr = compute_npsrs(len(orf_true))
-    orfs = []
-    thetas = []
-    phis = []
-    orfs.append(orf_true)
-    n_accep = 1
-    n_iter = 1
-    rejections = []
+
+    if resume == False:
+        print("not resume")
+
+        orfs = []
+        orfs.append(orf_true)
+        n_accep = 1
+        n_iter = 1
+        rejections = []
+
+    elif resume == True:
+        print("resume")
+        orfs = list(np.load("/fred/oz002/vdimarco/IPTA_scrambles/results/IPTA_makeskyscrambles_orfs_mod.npy"))
+        rejections = list(pd.read_csv("/fred/oz002/vdimarco/IPTA-scrambles/results/IPTA_n_tries_many_mod.csv", index_col=None).values.squeeze())
+        n_iter = len(rejections)
+        n_accep = np.cumsum(rejections)[-1]
+
     start = time.time()
     while n_accep < N:
         matchs = []
@@ -133,25 +153,31 @@ def get_scrambles(orf_true, Omega, f, Pij,  N=10, thresh=0.1):
             end = time.time()
             #print("time {}".format((end-start)))
             if end - start > 7200:
-                return(n_accep, n_iter, rejections, orfs, thetas, phis)
+                return(n_accep, n_iter, rejections)
         rejections.append(ct_rej)
         if reject == False:
             orfs.append(new_orf)
-            thetas.append(ptheta)
-            phis.append(pphi)
-            n_accep += 1
+
+            np.save("/fred/oz002/vdimarco/IPTA_scrambles/results/IPTA_makeskyscrambles_orfs_mod", np.array(orfs))
+
             start = time.time()
-            #print("accepted")
+
+            pd.DataFrame(rejections).to_csv('/fred/oz002/vdimarco/IPTA_scrambles/results/IPTA_n_tries_many_mod.csv', header=None, index=None)
+            plt.plot(np.cumsum(np.array(rejections)))
+            plt.title("NANOGrav_sky_scrambles; threshold: 0.1")
+            plt.xlabel("Number of iterations")
+            plt.ylabel("Cumulative number of accepted scrambles")
+            plt.savefig("/fred/oz002/vdimarco/IPTA_scrambles/plots/IPTA_nokill_mod.png")
+            plt.clf()
+
+            n_accep += 1
+            print("accepted")
         #else:
             #print("rejected")
-    return(n_accep, n_iter, rejections, orfs, thetas, phis)
+    return(n_accep, n_iter, rejections)
 
-
-n_a, n_i, c, orfs, thetas, phis = get_scrambles(orf_true, Omega, f, Pij, 1000, 0.1)
+n_a, n_i, c = get_scrambles(orf_true, Omega, f, Pij, 1000, 0.1, resume=False)
 
 #print(c)
 
-pd.DataFrame(c).to_csv('/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_PPTA_n_tries_many_mod_2h_2.csv', header=None, index=None) 
-pd.DataFrame(orfs).to_csv('/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_mod_orfs.csv', header=None, index=None)
-pd.DataFrame(thetas).to_csv('/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_mod_thetas.csv', header=None, index=None)
-pd.DataFrame(phis).to_csv('/fred/oz002/vdimarco/sky_scrambles/skies/results/DR3_mod_phis.csv', header=None, index=None)  
+#pd.DataFrame(c).to_csv('/fred/oz002/vdimarco/IPTA_scrambles/results/IPTA_n_tries_many_mod.csv', header=None, index=None) 

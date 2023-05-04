@@ -175,7 +175,7 @@ def get_scrambles(orf_true, Omega, f, Pij, N=10, thresh=0.1, resume=False):
             #print("rejected")
     return(n_accep, n_iter, rejections)
 
-n_a, n_i, c = get_scrambles(orf_true, Omega, f, Pij, 10000, 0.1, resume=False)
+n_a, n_i, c = get_scrambles(orf_true, Omega, f, Pij, 10000, 0.1, resume=True)
 
 #print(c)
 

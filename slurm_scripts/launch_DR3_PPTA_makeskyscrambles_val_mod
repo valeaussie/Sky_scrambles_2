@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=DR3_PPTA_mod_makeskyscrambles
-#SBATCH --output=/fred/oz002/vdimarco/sky_scrambles/skies/DR3_PPTA_makeskyscrambles_mod.out
+#SBATCH --job-name=DR3_PPTA_mod_makeskyscrambles_2
+#SBATCH --output=/fred/oz002/vdimarco/sky_scrambles/skies/outputs/DR3_PPTA_makeskyscrambles_mod_2.out
 #SBATCH --ntasks=1
 #SBATCH --time=24:00:00
 #SBATCH --tmp=8g
